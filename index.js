@@ -2,24 +2,43 @@ const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const mongoose = require("mongoose");
+const cookieSession = require("cookie-session");
+const dotenv = require("dotenv");
 
+const { signInRouter } = require("./routes/signInSignOut");
+
+dotenv.config();
 const app = express();
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 
 // middleware
 app.use(cors());
 app.use(helmet());
 app.use(express.json());
+app.use(
+  cookieSession({
+    signed: false,
+  })
+);
 
 app.get("/", (req, res) => res.send({ data: "hello!" }));
 
-// init
-mongoose
-  .connect("mongodb://localhost/rbac", { useNewUrlParser: true })
-  .then(() => {
-    console.log(`connected at mongodb://localhost/rbac`);
-    app.listen(PORT, () => {
-      console.log(`App listening at http://localhost:${PORT}`);
+// router middleware
+app.use("/", signInRouter);
+
+async function start() {
+  try {
+    await mongoose.connect("mongodb://localhost/rbac", {
+      useNewUrlParser: true,
     });
-  })
-  .catch((err) => console.error("connection error:", err));
+    console.log("connected at mongodb://localhost/rbac");
+    app.listen(PORT, () =>
+      console.log(`App listening at http://localhost:${PORT}`)
+    );
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+//init
+start();
