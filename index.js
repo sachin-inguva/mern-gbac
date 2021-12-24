@@ -5,10 +5,13 @@ const mongoose = require("mongoose");
 const cookieSession = require("cookie-session");
 const dotenv = require("dotenv");
 
-const { signInRouter } = require("./routes/signInSignOut");
-const { userRouter } = require("./routes/user");
-const { groupRouter } = require("./routes/group");
-const { permissionRouter } = require("./routes/permission");
+const {
+  userRouter,
+  permissionRouter,
+  groupRouter,
+  signInRouter,
+} = require("./routes");
+const { requireAuth } = require("./middleware/requireAuth");
 
 dotenv.config();
 const app = express();
@@ -28,9 +31,9 @@ app.get("/", (req, res) => res.send({ data: "hello!" }));
 
 // router middleware
 app.use("/", signInRouter);
-app.use("/users", userRouter);
-app.use("/groups", groupRouter);
-app.use("/permissions", permissionRouter);
+app.use("/users", requireAuth, userRouter);
+app.use("/groups", requireAuth, groupRouter);
+app.use("/permissions", requireAuth, permissionRouter);
 
 async function start() {
   try {
