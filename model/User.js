@@ -10,16 +10,11 @@ const userSchema = new mongoose.Schema(
       unique: true,
     },
     password: { type: String, required: true },
-    role: {
-      type: String,
-      default: "user",
-      enum: ["user", "admin"],
-    },
-    groups: {
+    group: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Group",
     },
-    permissions: {
+    permission: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Permission",
     },

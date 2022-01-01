@@ -1,6 +1,5 @@
 const express = require("express");
-
-const { Permission } = require("../model/Permission");
+const { Group, Permission, User } = require("../model");
 
 const permissionRouter = express.Router();
 
@@ -29,6 +28,38 @@ permissionRouter.put("/:id", async (req, res) => {
       if (err) throw err;
       res.send({ message: "Successfully updated!", permission });
     });
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
+});
+
+permissionRouter.post("/", async (req, res) => {
+  try {
+    const { groupId, tabs } = req.body;
+
+    const existingGroup = await Group.findById(groupId).exec();
+    if (!existingGroup) throw new Error("group does not exist!");
+
+    const existingPermission = await Permission.findOne({
+      group: existingGroup,
+    }).exec();
+    if (existingPermission)
+      throw new Error("Permission for the group already exist!");
+
+    const newPermission = new Permission({ group: existingGroup, tabs });
+    const permission = await newPermission.save();
+
+    const promises = existingGroup.members.map(async (member) => {
+      const user = await User.findById(member._id).exec();
+      user.permission = permission;
+      await user.save();
+    });
+
+    await Promise.all(promises);
+
+    res
+      .status(201)
+      .json({ message: "permission created successfully!", permission });
   } catch (error) {
     res.status(500).send({ error: error.message });
   }
