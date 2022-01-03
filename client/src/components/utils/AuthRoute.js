@@ -6,7 +6,7 @@ import { useAuth } from "../../context/auth-context";
 export function AuthRoute({ children }) {
   const { user } = useAuth();
 
-  if (!user) return <Navigate to="/login" />;
+  if (!user) return <Navigate to="/login" replace />;
 
   return <div>{children}</div>;
 }

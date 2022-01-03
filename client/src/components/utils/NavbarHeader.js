@@ -14,10 +14,8 @@ export function NavbarHeader() {
         <Navbar.Heading>Group based Authentication</Navbar.Heading>
         <Navbar.Divider />
         {links.map((link) => (
-          <Fragment>
-            <NavLink key={link} to={`/${link}`}>
-              {link}
-            </NavLink>
+          <Fragment key={link}>
+            <NavLink to={`/${link}`}>{link}</NavLink>
             <Navbar.Divider />
           </Fragment>
         ))}
