@@ -8,11 +8,12 @@ import { DRAWER_BODY } from "@blueprintjs/core/lib/esm/common/classes";
 
 const getAllUsers = () => axiosFetch.get("/users");
 
-const UserForm = ({ user, isEdit }) => {
+const UserForm = ({ data, isEdit, handleSubmit }) => {
   const { formData, appendFormData } = useFormData({
-    initialValue: isEdit ? user : { username: "", password: "" },
+    initialValue: isEdit ? data : { username: "", password: "" },
   });
 
+  debugger;
   return (
     <div>
       <p>username</p>
@@ -29,6 +30,13 @@ const UserForm = ({ user, isEdit }) => {
         type="password"
         placeholder="Password"
       />
+
+      <Button
+        intent="primary"
+        icon="tick"
+        onClick={() => handleSubmit(formData)}
+        text="Submit"
+      />
     </div>
   );
 };
@@ -37,8 +45,7 @@ export function ManageUsers() {
   const { isLoading, data, refetch } = useQuery("users", getAllUsers);
   const [showDialog, setShowDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-
-  const [mode, setMode] = useState("create");
+  const [isEdit, setIsEdit] = useState(false);
 
   const handleDeleteUser = async (user) => {
     const { _id } = user;
@@ -48,15 +55,26 @@ export function ManageUsers() {
   };
 
   const handleUpdate = async (user) => {
-    const { data } = await axiosFetch.put(`/users/${user._id}`);
+    const { data } = await axiosFetch.put(`/users/${user._id}`, user);
     await refetch();
+    setShowDialog(false);
+    setSelectedUser(null);
+    setIsEdit(false);
     alert(data.data.message);
   };
 
   const handleCreate = async (user) => {
-    const { data } = await axiosFetch.post("/users", user);
+    const { data } = await axiosFetch.post("/users/createUser", user);
     await refetch();
+    setShowDialog(false);
+    setSelectedUser(null);
+    setIsEdit(false);
     alert(data.data.message);
+  };
+
+  const handleSubmit = async (formData) => {
+    debugger;
+    isEdit ? handleUpdate(formData) : handleCreate(formData);
   };
 
   if (isLoading) {
@@ -68,7 +86,11 @@ export function ManageUsers() {
       <Button
         icon="add"
         text="Create User"
-        onClick={() => setShowDialog(true)}
+        onClick={() => {
+          setIsEdit(true);
+          setShowDialog(true);
+          setSelectedUser(null);
+        }}
       />
       {data.data.map((user) => {
         return (
@@ -82,6 +104,7 @@ export function ManageUsers() {
                 icon="updated"
                 text="update"
                 onClick={() => {
+                  setIsEdit(true);
                   setShowDialog(true);
                   setSelectedUser(user);
                 }}
@@ -100,12 +123,11 @@ export function ManageUsers() {
         isOpen={showDialog}
         onClose={() => setShowDialog(false)}
       >
-        <div className={DRAWER_BODY}>
+        <div style={{ padding: 10 }} className={DRAWER_BODY}>
           <UserForm
-            mode={mode}
-            user={selectedUser}
-            handleUpdate={handleUpdate}
-            handleCreate={handleCreate}
+            isEdit={isEdit}
+            data={selectedUser}
+            handleSubmit={handleSubmit}
           />
         </div>
       </Drawer>

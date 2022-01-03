@@ -7,7 +7,7 @@ import { useAuth } from "../../context/auth-context";
 export function NavbarHeader() {
   const { user } = useAuth();
 
-  const links = user?.permission?.tabs;
+  const links = user?.permission?.tabs || [];
   return (
     <Navbar>
       <Navbar.Group>

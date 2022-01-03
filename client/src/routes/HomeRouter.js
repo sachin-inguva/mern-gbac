@@ -32,7 +32,7 @@ const componentMapping = (route) => {
 export function HomeRouter() {
   const { user } = useAuth();
 
-  const userRoutes = user?.permission?.tabs.map((tab) => {
+  const userRoutes = user?.permission?.tabs?.map((tab) => {
     return (
       <Route
         key={tab}

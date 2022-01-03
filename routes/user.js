@@ -1,6 +1,7 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 
+const { hashPassword } = require("../utils");
 const { User } = require("../model/User");
 
 const userRouter = express.Router();
@@ -9,6 +10,25 @@ userRouter.get("/", async (_, res) => {
   try {
     const users = await User.find().populate("permission").exec();
     res.status(200).send(users);
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
+});
+
+userRouter.post("/createUser", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    const existingUser = await User.findOne({ username }).exec();
+
+    if (existingUser) throw new Error("User already exists");
+
+    const hashedPassword = await hashPassword(password);
+    const newUser = new User({ username, password: hashedPassword });
+
+    const user = await newUser.save();
+
+    return res.status(201).send(user);
   } catch (error) {
     res.status(500).send({ error: error.message });
   }
@@ -42,8 +62,13 @@ userRouter.get("/:id", async (req, res) => {
 userRouter.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const user = await User.findByIdAndUpdate(id, req.body).exec();
-    res.send({ message: "Successfully updated!", user });
+    const { username, password } = req.body;
+    const hashedPassword = await hashPassword(password);
+    const user = await User.findByIdAndUpdate(id, {
+      username,
+      password: hashedPassword,
+    }).exec();
+    res.status(200).send({ message: "Successfully updated!", user });
   } catch (error) {
     res.status(500).send({ error: error.message });
   }
