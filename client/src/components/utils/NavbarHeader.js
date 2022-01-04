@@ -13,12 +13,15 @@ export function NavbarHeader() {
       <Navbar.Group>
         <Navbar.Heading>Group based Authentication</Navbar.Heading>
         <Navbar.Divider />
+        <h3>Welcome {user.username}!</h3>
+        <Navbar.Divider />
         {links.map((link) => (
           <Fragment key={link}>
             <NavLink to={`/${link}`}>{link}</NavLink>
             <Navbar.Divider />
           </Fragment>
         ))}
+
         <Link to="/logout">Logout</Link>
       </Navbar.Group>
     </Navbar>

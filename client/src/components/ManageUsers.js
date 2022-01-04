@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Card, Drawer, InputGroup } from "@blueprintjs/core";
+import { Button, Card, Drawer, FormGroup, InputGroup } from "@blueprintjs/core";
 import { useQuery } from "react-query";
 
 import { axiosFetch } from "../api/axiosFetch";
@@ -13,24 +13,24 @@ const UserForm = ({ data, isEdit, handleSubmit }) => {
     initialValue: isEdit ? data : { username: "", password: "" },
   });
 
-  debugger;
   return (
     <div>
-      <p>username</p>
-      <InputGroup
-        value={formData.username}
-        onChange={({ target }) => appendFormData({ username: target.value })}
-        type="text"
-        placeholder="Enter username"
-      />
-      <p>Password</p>
-      <InputGroup
-        value={formData.password}
-        onChange={({ target }) => appendFormData({ password: target.value })}
-        type="password"
-        placeholder="Password"
-      />
-
+      <FormGroup label="Username">
+        <InputGroup
+          value={formData.username}
+          onChange={({ target }) => appendFormData({ username: target.value })}
+          type="text"
+          placeholder="Enter username"
+        />
+      </FormGroup>
+      <FormGroup label="Password">
+        <InputGroup
+          value={formData.password}
+          onChange={({ target }) => appendFormData({ password: target.value })}
+          type="password"
+          placeholder="Password"
+        />
+      </FormGroup>
       <Button
         intent="primary"
         icon="tick"
@@ -73,7 +73,6 @@ export function ManageUsers() {
   };
 
   const handleSubmit = async (formData) => {
-    debugger;
     isEdit ? handleUpdate(formData) : handleCreate(formData);
   };
 
@@ -87,7 +86,7 @@ export function ManageUsers() {
         icon="add"
         text="Create User"
         onClick={() => {
-          setIsEdit(true);
+          setIsEdit(false);
           setShowDialog(true);
           setSelectedUser(null);
         }}
@@ -119,9 +118,13 @@ export function ManageUsers() {
         );
       })}
       <Drawer
-        title="User"
+        title={`${isEdit ? "Edit" : "Create"} User`}
         isOpen={showDialog}
-        onClose={() => setShowDialog(false)}
+        onClose={() => {
+          setShowDialog(false);
+          setSelectedUser(null);
+          setIsEdit(false);
+        }}
       >
         <div style={{ padding: 10 }} className={DRAWER_BODY}>
           <UserForm

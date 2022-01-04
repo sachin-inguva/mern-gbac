@@ -77,10 +77,8 @@ userRouter.put("/:id", async (req, res) => {
 userRouter.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    User.findOneAndDelete({ id }, (err, user) => {
-      if (err) throw err;
-      res.send({ message: "Successfully deleted!", user });
-    });
+    await User.deleteOne({ _id: id }).exec();
+    res.send({ message: "Successfully deleted!" });
   } catch (error) {
     res.status(500).send({ error: error.message });
   }

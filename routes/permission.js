@@ -4,10 +4,12 @@ const { Group, Permission, User } = require("../model");
 const permissionRouter = express.Router();
 
 permissionRouter.get("/", (_, res) => {
-  Permission.find().then((permissions, error) => {
-    if (error) res.send({ error });
-    res.send(permissions);
-  });
+  Permission.find()
+    .populate(["group"])
+    .then((permissions, error) => {
+      if (error) res.send({ error });
+      res.send(permissions);
+    });
 });
 
 permissionRouter.get("/:id", async (req, res) => {
@@ -35,9 +37,9 @@ permissionRouter.put("/:id", async (req, res) => {
 
 permissionRouter.post("/", async (req, res) => {
   try {
-    const { groupId, tabs } = req.body;
+    const { group, tabs } = req.body;
 
-    const existingGroup = await Group.findById(groupId).exec();
+    const existingGroup = await Group.findById(group).exec();
     if (!existingGroup) throw new Error("group does not exist!");
 
     const existingPermission = await Permission.findOne({
@@ -68,10 +70,8 @@ permissionRouter.post("/", async (req, res) => {
 permissionRouter.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    Permission.findOneAndDelete({ id }, (err, permission) => {
-      if (err) throw err;
-      res.send({ message: "Successfully deleted!", permission });
-    });
+    const permission = await Permission.deleteOne({ _id: id }).exec();
+    res.send({ message: "Successfully deleted!", permission });
   } catch (error) {
     res.status(500).send({ error: error.message });
   }

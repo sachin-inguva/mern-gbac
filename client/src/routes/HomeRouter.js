@@ -8,6 +8,8 @@ import { Logout } from "../components/Logout";
 import { Schedule } from "../components/Schedule";
 import { Reports } from "../components/Reports";
 import { useAuth } from "../context/auth-context";
+import { Permissions } from "../components/Permissions";
+import { Groups } from "../components/Groups";
 
 const componentMapping = (route) => {
   switch (route) {
@@ -20,9 +22,9 @@ const componentMapping = (route) => {
     case "reports":
       return <Reports />;
     case "permissions":
-      return <Schedule />;
+      return <Permissions />;
     case "groups":
-      return <Schedule />;
+      return <Groups />;
 
     default:
       return <PageNotFound />;

@@ -63,10 +63,8 @@ groupRouter.put("/:id", async (req, res) => {
 groupRouter.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    Group.findOneAndDelete({ id }, (err, group) => {
-      if (err) throw err;
-      res.send({ message: "Successfully deleted!", group });
-    });
+    const group = await Group.deleteOne({ _id: id }).exec();
+    res.send({ message: "Successfully deleted!", group });
   } catch (error) {
     res.status(500).send({ error: error.message });
   }

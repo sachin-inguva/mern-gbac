@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Card, InputGroup } from "@blueprintjs/core";
+import { Button, Card, FormGroup, InputGroup } from "@blueprintjs/core";
 import { useNavigate } from "react-router";
 
 import { axiosFetch } from "../api/axiosFetch";
@@ -27,25 +27,25 @@ export function SignIn() {
 
   return (
     <Card style={{ margin: "auto 30%", padding: 20 }}>
-      <p>Login</p>
-      <p>Username</p>
-      <InputGroup
-        value={username}
-        onChange={({ target }) => setUsername(target.value)}
-        type="text"
-        placeholder="Enter username"
-      />
-      <p>Password</p>
-      <InputGroup
-        value={password}
-        onChange={({ target }) => setPassword(target.value)}
-        type="password"
-        placeholder="Password"
-      />
+      <h2>Login</h2>
+      <FormGroup label="Username">
+        <InputGroup
+          value={username}
+          onChange={({ target }) => setUsername(target.value)}
+          type="text"
+          placeholder="Enter username"
+        />
+      </FormGroup>
+      <FormGroup label="Password">
+        <InputGroup
+          value={password}
+          onChange={({ target }) => setPassword(target.value)}
+          type="password"
+          placeholder="Password"
+        />
+      </FormGroup>
 
-      <Button onClick={handleLogin} intent="primary">
-        Login
-      </Button>
+      <Button large onClick={handleLogin} intent="primary" text="Login" />
     </Card>
   );
 }
